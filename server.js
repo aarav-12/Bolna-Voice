@@ -26,7 +26,7 @@ const returns = [];
 
 
 app.post("/check-order", (req, res) => {
-  const { orderId } = req.body;
+  const orderId = String(req.body.orderId);
 
   if (!orders[orderId]) {
     return res.json({
