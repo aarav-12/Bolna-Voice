@@ -14,8 +14,16 @@ const orders = {
   "456": {
     product: "Adidas Jacket",
     returnWindow: false
+  },
+  "789": {
+    product: "Puma Running Shoes",
+    returnWindow: true
   }
 };
+
+
+const returns = [];
+
 
 app.post("/check-order", (req, res) => {
   const { orderId } = req.body;
@@ -37,18 +45,45 @@ app.post("/check-order", (req, res) => {
 app.post("/create-return", (req, res) => {
   const { orderId, reason } = req.body;
 
+  if (!orders[orderId]) {
+    return res.json({
+      status: "error",
+      message: "Order does not exist"
+    });
+  }
+
+  const newReturn = {
+    id: Date.now(),
+    orderId,
+    product: orders[orderId].product,
+    reason,
+    status: "Return Created",
+    createdAt: new Date().toISOString()
+  };
+
+  returns.push(newReturn);
+
   res.json({
     status: "return_created",
-    orderId,
-    reason,
+    return: newReturn,
     labelUrl: "https://return-label-demo.com/label.pdf"
   });
 });
+
+
+app.get("/returns", (req, res) => {
+  res.json(returns);
+});
+
 
 app.get("/", (req, res) => {
   res.send("Voice AI Returns API running");
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
