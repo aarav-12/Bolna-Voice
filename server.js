@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 const express = require("express");
 const cors = require("cors");
@@ -40,6 +41,26 @@ app.post("/check-order", (req, res) => {
     product: orders[orderId].product,
     eligibleForReturn: orders[orderId].returnWindow
   });
+});
+app.get("/bolna-token", async (req, res) => {
+  try {
+    const response = await fetch("https://api.bolna.ai/v1/sessions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.BOLNA_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        agent_id: "06a7e00a-6b7b-4e89-ac2d-7d35348d526e"
+      })
+    });
+
+    const data = await response.json();
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create session" });
+  }
 });
 
 app.post("/create-return", (req, res) => {
